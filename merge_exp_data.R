@@ -52,7 +52,7 @@ colnames(age)[1] <- "ID_1"
 exp_sample <- join(exp_sample, age, by="ID_1")
 
 #create intercept column (use when creating covariate file)
-exp_sample$intercept <- c("B", rep(1,672))
+exp_sample$intercept <- c("B", rep(1,length(CD207_trans$ID_1)))
 
 write.table(exp_sample, "./TwinsUK/Eurobats_genotypes/chr2_Eurobats_Public_exp_pheno.sample", row.names=F, quote=F, sep=" ")
 
