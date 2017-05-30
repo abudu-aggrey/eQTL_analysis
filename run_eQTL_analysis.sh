@@ -70,7 +70,7 @@ printf "\n" }' > ${mean_geno}
 
 
 module load languages/R-3.3.3-ATLAS
-#need to modify length of exp_sample$intercept for no. of samples
+
 
 Rscript ./scripts/merge_exp_data.R
 
