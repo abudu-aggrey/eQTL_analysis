@@ -18,3 +18,5 @@ GEMMA_snp_file.R: creates SNP annotation file for GEMMA
 
 sort_eQTL_results.R: sorts the results by p-value
 
+
+run_coloc.R: perform colocalisation anlysis with results from eQTL analysis and GWAS summary stats
