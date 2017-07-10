@@ -17,7 +17,7 @@ low_pos <- SNP_pos - 100000
 #plus 23andme estimates
 ECZ_GWAS <- read.table("./EAGLE_AD_GWAS/results.euro.tsv", header=T)
 
-#calcualte z-scores and p-values:
+#calculate z-scores and p-values:
 ECZ_GWAS$Z_SCORE <- ECZ_GWAS$BETA/ECZ_GWAS$SE
 ECZ_GWAS$P_VALUE <- 2*pnorm(-abs(ECZ_GWAS$Z_SCORE))
 
