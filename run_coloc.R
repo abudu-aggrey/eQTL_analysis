@@ -1,3 +1,6 @@
+install.packages("coloc")
+library(coloc)
+
 #generate input files for coloc analysis.
 
 #read in results from eQTL analysis 
@@ -11,27 +14,37 @@ low_pos <- SNP_pos - 100000
 
 
 #read in GWAS data and subset for SNPs from eQTL analysis
-ECZ_GWAS <- read.table("./EAGLE_AD_GWAS/EAGLE_AD_GWAS_results_2015.txt", header=T)
-GWAS_data <- ECZ_GWAS[which(ECZ_GWAS$rsID %in% eQTL_data$rs), ]
-locus_snps <- GWAS_data[which(GWAS_data$position > low_pos & GWAS_data$position < upp_pos), ]
-locus_eQTL <- eQTL_data[which(eQTL_data$rs %in% locus_snps$rsID), ]
+#plus 23andme estimates
+ECZ_GWAS <- read.table("./EAGLE_AD_GWAS/results.euro.tsv", header=T)
+
+#calcualte z-scores and p-values:
+ECZ_GWAS$Z_SCORE <- ECZ_GWAS$BETA/ECZ_GWAS$SE
+ECZ_GWAS$P_VALUE <- 2*pnorm(-abs(ECZ_GWAS$Z_SCORE))
+
+#combine GWAs and eQTL data
+colnames(eQTL_data)[3] <- "POS"
+GWAS_data <- merge(ECZ_GWAS, eQTL_data, by="POS")
+
+locus_snps <- GWAS_data[which(GWAS_data$POS > low_pos & GWAS_data$POS < upp_pos), ]
 
 
 #Perform coloc
-#install.packages("coloc")
-library(coloc)
 
-#N = 102762
+
+#N = number of people (102762 for GWAS dataset including 23andme, 672 for eQTL dataset)
 #N minus 23andme = 102762 - 62231 = 40531
-#ratio of cases to controls = 0.150
-#using p-values
+#ratio of cases to controls = 0.183
+#using p-values:
 
-my.res <- coloc.abf(dataset1=list(pvalues=locus_snps$p.value, N=40531, snp=locus_snps$rsID, type="cc", s=0.150),
-            dataset2=list(pvalues=locus_eQTL$p_score, N=672, snp=locus_eQTL$rs, type="quant"),
-            MAF=locus_eQTL$af)
+my.res <- coloc.abf(dataset1=list(pvalues=locus_snps$P_VALUE, N=102762, snp=locus_snps$rs, type="cc", s=0.183),
+            dataset2=list(pvalues=locus_snps$p_score, N=672, snp=locus_snps$rs, type="quant"),
+            MAF=locus_snps$af)
 
+#view summary
+my.res$summary
 
+#save results to file
 coloc_results <- my.res$results
 coloc_results <- coloc_results[order(coloc_results$SNP.PP.H4,decreasing=T),]
 
-write.table(coloc_results, file="./TwinsUK/coloc/results_CD207_minus_23andme.txt", quote=F, sep=" ", row.names=F)
+write.table(coloc_results, file="./TwinsUK/coloc/results_CD207_plus_23andme.txt", quote=F, sep=" ", row.names=F)
