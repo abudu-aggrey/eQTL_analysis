@@ -7,7 +7,7 @@ library(coloc)
 
 eQTL_data <- read.table("./TwinsUK/CD207_eQTL_analysis_all.assoc.txt", header=T)
 
-#define region around leand SNP
+#define region around lead SNP
 SNP_pos <- eQTL_data$ps[which(eQTL_data$rs == "rs112111458")]
 upp_pos <- SNP_pos + 100000
 low_pos <- SNP_pos - 100000
