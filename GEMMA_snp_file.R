@@ -5,7 +5,7 @@
 gen <- read.table("./TwinsUK/Eurobats_genotypes/chr2_Eurobats_Public.gen")
 
 #read in text file of SNP names
-CD207_snps <- read.table("./TwinsUK/credible_SNP_list.txt")
+CD207_snps <- read.table("./TwinsUK/SNP_list.txt")
 
 #name the SNP column of both files
 colnames(gen)[2] <- "RSID"
