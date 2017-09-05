@@ -7,7 +7,7 @@ library(coloc)
 
 eQTL_data <- read.table("./TwinsUK/CD207_eQTL_analysis_all.assoc.txt", header=T)
 
-#define region around lead SNP
+#define region around lead SNP (100kb either side of SNP)
 SNP_pos <- eQTL_data$ps[which(eQTL_data$rs == "rs112111458")]
 upp_pos <- SNP_pos + 100000
 low_pos <- SNP_pos - 100000
@@ -43,7 +43,7 @@ my.res <- coloc.abf(dataset1=list(pvalues=locus_snps$P_VALUE, N=102762, snp=locu
 #view summary
 my.res$summary
 
-#save results to file
+#order by decreasing p-value and save results to file
 coloc_results <- my.res$results
 coloc_results <- coloc_results[order(coloc_results$SNP.PP.H4,decreasing=T),]
 
