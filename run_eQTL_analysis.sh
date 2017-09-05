@@ -5,44 +5,64 @@
 #PBS -l nodes=1:ppn=1
 #PBS -l walltime=02:00:00
 
+#specify path for:
 
-CD207_snps="./TwinsUK/credible_SNP_list.txt"
+#your list of SNPs/potential eQTLs
+CD207_snps="./TwinsUK/SNP_list.txt"
+
+#genotype files (.gen and .sample files)
 genfile="./TwinsUK/Eurobats_genotypes/chr2_Eurobats_Public.gen"
+#modified sample file to include eczema case/control status
 sample_file="./TwinsUK/Eurobats_genotypes/chr2_Eurobats_Public_alt_pheno.sample"
+
+#genotype files subsetted for genotyped individuals with expression data
 outfile="./TwinsUK/Eurobats_genotypes/chr2_Eurobats_Public_subset_samples"
+
+#sample ID of genotyped individuals with expression data available
 exp_sample_id="./TwinsUK/Sample_ID.txt"
 
+#number of genotyped individuals with expression data
 number_of_samples=672
+
+#bimbam file to be created from .gen file. Will need this to run gemma
 mean_geno="./TwinsUK/Eurobats_genotypes/chr2_genotype.bimbam"
 
+#modified sample file with expression data and age variables
 new_sample_file="./TwinsUK/Eurobats_genotypes/chr2_Eurobats_Public_exp_pheno.sample"
+
+# phenotype file with cases control status and expression data
 pheno_file="./TwinsUK/Eurobats_genotypes/chr2_pheno.bimbam"
+
+# covariate file with intercept column (1) and sex
 covar_file="./TwinsUK/Eurobats_genotypes/covar.txt"
 
+# file with SNP name (rs ID's), bp and chromosome
 snp_file="./TwinsUK/Eurobats_genotypes/SNP_annotation_file.txt"
 
+#output file for eQTL analysis
 eQTL_out="CD207_eQTL_analysis_test"
 
+#relationship matirx
 relatedness_matrix="./TwinsUK/Eurobats_genotypes/relatedness_all_geno.cXX.txt"
 
 #******************************************************************************************************************
 
 #to get list of SNPs for region (eg, CD207 at chr2p13.3= chr2:71025000-71150000)
 
-#gawk '$3 >= 71025000 && $3 <= 71150000 {print $2}' < ${genfile} > ${CD207_snps}
+gawk '$3 >= 71025000 && $3 <= 71150000 {print $2}' < ${genfile} > ${CD207_snps}
 
 
 
-#extract transcript data for CD207 (transcript id = ENSG00000116031)
-#sed -n -e '1p' -e '/ENSG00000116031/p' \
-#< /projects/TwinsUK_eczema/TwinsUK_PublicRNAseqData/Skin/EUROBATS.S.annonymousIDs.rpkm \
-#> ./TwinsUK/CD207_transcript_data.txt
+#extract transcript data for CD207 (transcript id = ENSG00000116031, derived from GENCODE file)
+sed -n -e '1p' -e '/ENSG00000116031/p' \
+< /projects/TwinsUK_eczema/TwinsUK_PublicRNAseqData/Skin/EUROBATS.S.annonymousIDs.rpkm \
+> ./TwinsUK/CD207_transcript_data.txt
 
 #read into R and merge with sample data, and create list of ID's with expression data
 
-#module load languages/R-3.3.3-ATLAS
+module load languages/R-3.3.3-ATLAS
 
-#Rscript ./scripts/get_expression_sample_id.R
+Rscript ./scripts/get_expression_sample_id.R
 
 #use sample id's to subset .gen and .sample imputation files
 
