@@ -28,17 +28,45 @@ GWAS_data <- merge(ECZ_GWAS, eQTL_data, by="POS")
 locus_snps <- GWAS_data[which(GWAS_data$POS > low_pos & GWAS_data$POS < upp_pos), ]
 
 
+
+#determine variance of Beta's
+
+#for GWAS Beta's:
+
+GWAS_N <- locus_snps$N
+GWAS_SE <- locus_snps$SE
+
+for (i in GWAS_N) {
+	
+	GWAS_SD <- GWAS_SE * sqrt(GWAS_N)
+}
+
+locus_snps$var_beta_GWAS <- GWAS_SD^2
+
+#for eQTL Beta's:
+
+eQTL_SD <- locus_snps$se* sqrt(672)
+locus_snps$var_beta_eQTL <- eQTL_SD^2
+
 #Perform coloc
 
 
 #N = number of people (102762 for GWAS dataset including 23andme, 672 for eQTL dataset)
 #N minus 23andme = 102762 - 62231 = 40531
 #ratio of cases to controls = 0.183
+
+#using beta's and variance of beta's:
+
+my.res <- coloc.abf(dataset1=list(beta=locus_snps$BETA, varbeta=locus_snps$var_beta_GWAS, N=103100, snp=locus_snps$rs, type="cc", s=0.183),
+            dataset2=list(beta=locus_snps$beta, varbeta=locus_snps$var_beta_eQTL, N=672, snp=locus_snps$rs, type="quant"),
+            MAF=locus_snps$af)
+
+
 #using p-values:
 
-my.res <- coloc.abf(dataset1=list(pvalues=locus_snps$P_VALUE, N=102762, snp=locus_snps$rs, type="cc", s=0.183),
-            dataset2=list(pvalues=locus_snps$p_score, N=672, snp=locus_snps$rs, type="quant"),
-            MAF=locus_snps$af)
+#my.res <- coloc.abf(dataset1=list(pvalues=locus_snps$P_VALUE, N=102762, snp=locus_snps$rs, type="cc", s=0.183),
+#            dataset2=list(pvalues=locus_snps$p_wald, N=672, snp=locus_snps$rs, type="quant"),
+#            MAF=locus_snps$af)
 
 #view summary
 my.res$summary
