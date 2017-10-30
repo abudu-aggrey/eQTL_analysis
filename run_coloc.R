@@ -33,20 +33,15 @@ locus_snps <- GWAS_data[which(GWAS_data$POS > low_pos & GWAS_data$POS < upp_pos)
 
 #for GWAS Beta's:
 
-GWAS_N <- locus_snps$N
 GWAS_SE <- locus_snps$SE
 
-for (i in GWAS_N) {
-	
-	GWAS_SD <- GWAS_SE * sqrt(GWAS_N)
-}
-
-locus_snps$var_beta_GWAS <- GWAS_SD^2
+locus_snps$var_beta_GWAS <- GWAS_SE^2
 
 #for eQTL Beta's:
 
-eQTL_SD <- locus_snps$se* sqrt(672)
-locus_snps$var_beta_eQTL <- eQTL_SD^2
+eQTL_SE <- locus_snps$se
+locus_snps$var_beta_eQTL <- eQTL_SE^2
+
 
 #Perform coloc
 
